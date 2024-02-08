@@ -1,12 +1,15 @@
 #include <iostream>
 #include <cstring>
+#include <fstream>
+#include <iomanip>
+
 
 using namespace std;
 
 struct Student {
   //variables
-  char* fname;
-  char* lname;
+  char* fname = new char[30];
+  char* lname = new char[30];
   int id;
   float gpa;
   int hash;
@@ -14,8 +17,8 @@ struct Student {
 public:
   // Constructor
   Student() {
-    fname = new char[20];
-    lname = new char[20];
+    fname = new char[30];
+    lname = new char[30];
     id = 0;
     gpa = 0.0f;
     hash = 0;
@@ -27,26 +30,37 @@ public:
     delete[] fname;
     delete[] lname;
   }
-  void printStudent(){
+  void printStudent(){/*
     cout.setf(ios::fixed, ios::floatfield);
     cout.setf(ios::showpoint);
-    cout.precision(2);
-    cout << fname << "   " << lname << "  " << id << "  " << gpa << endl; 
+    cout.precision(2);*/
+    cout << "name: " << endl;;
+    cout << fname << endl;
+    cout << lname << endl;
+
+    cout << "id: " << setw(6) << setfill('0') << id << endl;
+    cout << "gpa: " << gpa << endl;
+    cout << endl;
+    //cout << fname << "   " << lname << "  " << id << "  " << gpa << endl; 
   }
 };
 
 
 void printTable(Student** table, int size);
 Student** add(Student* studenttoadd, Student** table, int size);
- 
+Student* generate(int &idd);
+
+
 int main(){
   int size = 100;
   Student** table = new Student*[size];
 
+  srand(time(NULL));
   bool justKeepGoing = true;
   char input[20];
 
-
+  int whatidwereone = 0;
+  /*
   Student* newStu1 = new Student();
   char* hmm = new char[20];
   strcpy(hmm, "bob");
@@ -64,6 +78,44 @@ int main(){
   table = add(newStu1, table, size);
 
   printTable(table, size);
+  */
+
+  //int temp = 1;
+  //generate(temp)->printStudent();
+  //  table = add(generate(whatidwereone), table, size);
+
+  cout << "num of students to put?" << endl;
+  int num = 0;
+  cin >> num;
+  cin.ignore();
+  for(int i = 0;i<num;i++){
+    table = add(generate(whatidwereone), table, size);
+  }
+  printTable(table, size);
+
+  /*
+  cout << " empty" << endl;
+  cout << table[1]->fname << endl;
+  cout << table[1]->lname << endl;
+  cout << table[1]->id << endl;
+  cout << table[1]->gpa << endl;
+  /*  Student* student = new Student();
+
+  int randnum = rand()%1001;
+  ifstream inputFile("fname.txt");
+  //inputFile.open("fname.txt");
+  char randomfirst[20];
+  int templine = 0;
+  while(randnum != templine  && inputFile.getline(randomfirst, 30)){
+    ++templine;
+  }
+  if(templine == randnum){
+    strcpy(student->fname, randomfirst);
+  }
+  inputFile.close();
+  cout << student->fname << endl;
+  */
+  
   
 }
 
@@ -102,7 +154,7 @@ void printTable(Student** table, int size){
 
 
 Student** add(Student* student, Student** table, int size){
-  cout << "started add function" << endl;
+  //cout << "started add function" << endl;
 
   Student* current = table[(student->id)%size];
   if(current==NULL){
@@ -115,7 +167,68 @@ Student** add(Student* student, Student** table, int size){
     current->next = student;
   }
 
-  cout << "ran add function" << endl;
+  //cout << "ran add function" << endl;
 
   return table;
+}
+
+
+Student* generate(int &idd){
+  Student* student = new Student();
+  /*
+  int randnum2 = rand()%1001;
+  ifstream inputFile("fname.txt");
+  char randomfirst[50];
+  int templine = 0;
+  while(randnum2 != templine  && inputFile.getline(randomfirst, 50)){
+    ++templine;
+  }
+  student->fname = randomfirst;
+    //strcpy(student->fname, randomfirst);
+    
+  
+  inputFile.close();
+  */
+
+  int numLine = 0;
+  int fRandom = rand()%100;
+  ifstream ffile;
+  ffile.open("fname.txt");
+  //char idk[50];
+  //  char line [50];
+  
+  char fvalue[30];
+  //Go till random generated line #
+  while (fRandom!=numLine && ffile.getline(fvalue, 30)) {
+    ++numLine;
+  }
+  if (numLine == fRandom) {
+    strcpy(student->fname, fvalue);
+  }
+  
+  ffile.close();
+
+  
+  int lRandom = rand()%100;
+  ifstream lfile;
+  lfile.open("lname.txt");
+  numLine = 0;
+  char lvalue[30];
+  while (lRandom!=numLine && lfile.getline(lvalue, 30)) {
+    ++numLine;
+  }
+  if (numLine == lRandom) {
+
+    strcpy(student->lname, lvalue);
+  }
+  lfile.close();
+  
+  idd++;
+  student->id = idd;
+  float gpt = (double)(rand()%401)/100;
+  student->gpa = gpt;
+
+  //student->printStudent();
+  
+  return student;
 }
