@@ -50,7 +50,7 @@ void printTable(Student** table, int size);
 Student** add(Student* studenttoadd, Student** table, int size);
 Student* generate(int &idd);
 void deleet(Student** &table, int size);
-void rehash(Student** &table, int &size);
+Student** rehash(Student** table, int size);
 
 int main(){
   int size = 100;
@@ -116,11 +116,16 @@ int main(){
 	if(collisions > 3){
 	  
 
-	  rehash(table, size);
+	  table = rehash(table, size);
+	  size *= 2;
 	}
       }
     } else if (strcmp(input, "PRINT")==0){
       printTable(table, size);
+    } else if (strcmp(input, "DELETE")==0){
+      deleet(table, size);
+    } else if (strcmp(input, "QUIT")==0){
+      justKeepGoing = false;
     }
     
     
@@ -180,15 +185,22 @@ Student** add(Student* student, Student** table, int size){
 
   int tempy = student->id%size;
   Student* current = table[tempy];
+  Student* temptwo = new Student();
+  temptwo->fname = student->fname;
+  temptwo->lname = student->lname;
+  temptwo->id = student->id;
+  temptwo->gpa = student->gpa;
+  temptwo->next = NULL;
   
   if(current==NULL){
-    table[tempy] = student;
+    table[tempy] = temptwo;
   } else if (table[tempy] != NULL){
     while(current->next != NULL){
       current = current->next;
     }
 
-    current->next = student;
+    current->next = temptwo;
+    current->next->next = NULL;
   }
 
   //cout << "ran add function" << endl;
@@ -327,37 +339,37 @@ void deleet(Student** &table, int size){
 }
 */
 
-void rehash(Student** &table, int &size){
+Student** rehash(Student** table, int size){
   int count = 0;
 
-  Student** newTable = new Student*[size*2];
-  for(int i = 0;i<size*2;i++){
+  int newSize = size*2;
+  Student** newTable = new Student*[newSize];
+  for(int i = 0;i<newSize;i++){
     newTable[i] = NULL;
   }
   
   for(int i=0; i < size; i++){
     cout << "rehashing..." << endl;
     Student* temp = table[i];
+    //temp->next = NULL;
     bool keepGoing2 = true;
     while(temp != NULL && keepGoing2 == true){
       
-      newTable = add(temp, newTable, size*2);
+      newTable = add(temp, newTable, newSize);
       temp = temp->next;
       count++;
-      if(count > 3){
-        keepGoing2 = false;
-      }
+      //if(count > 3){
+      //  keepGoing2 = false;
+      //}
 
     }
   }
   for(int i = 0;i<size;i++){
-    table[i]->~Student();
+    table[i] = NULL;
   }
 
   size*=2;
-  table = new Student*[size];
-  table = newTable;
-
+  return newTable;
   
   /*
   Student** newTable = new Student*[size*2];
