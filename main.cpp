@@ -50,6 +50,7 @@ void printTable(Student** table, int size);
 Student** add(Student* studenttoadd, Student** table, int size);
 Student* generate(int &idd);
 void deleet(Student** &table, int size);
+void rehash(Student** &table, int &size);
 
 int main(){
   int size = 100;
@@ -71,11 +72,26 @@ int main(){
   printTable(table, size);
 
   cout << "break" << endl;
-  while(true){
+
+  
+  rehash(table, size);
+
+  int randooo = 201;
+  cout << "before" << endl;
+  printTable(table, size);
+  cout << "after" << endl;
+  table = add(generate(randooo), table, size);
+  printTable(table, size);
+    
+  /*while(true){
     deleet(table, size);
     printTable(table, size);
-  }
+    }*/
 }
+
+
+
+
 
 void printTable(Student** table, int size){
   for (int i = 0; i < size; i++) {
@@ -242,3 +258,52 @@ void deleet(Student** &table, int size){
   }
 }
 */
+
+void rehash(Student** &table, int &size){
+  int count = 0;
+
+  Student** newTable = new Student*[size*2];
+  for(int i = 0;i<size*2;i++){
+    newTable[i] = NULL;
+  }
+
+  for(int i=0; i < size; i++){
+    Student* temp = table[i];
+    while(temp != NULL){
+      newTable = add(temp, newTable, size*2);
+      temp = temp->next;
+      count++;
+    }
+  }
+  for(int i = 0;i<size;i++){
+    table[i]->~Student();
+  }
+
+  size*=2;
+  table = new Student*[size];
+  table = newTable;
+
+  
+  /*
+  Student** newTable = new Student*[size*2];
+  for(int i = 0;i<size*2;i++){
+    newTable[i] = NULL;
+  }
+
+  for(int i = 0;i<size;i++){
+    Student* temp = table[i];
+    while(temp != NULL){
+      temp->hash = student->id % SIZE*2;
+      Student* newS = new Student();
+      newS->fname = temp->fname;
+      newS->lname = temp->lname;
+      newS->id = temp->id;
+      newS->gpa = temp->gpa;
+
+      newTable = add(newS, newTable, size*2);
+      newS = newS->next
+    }
+    }*/
+
+  
+}
