@@ -62,6 +62,70 @@ int main(){
 
   int whatidwereone = 0;
 
+  while(justKeepGoing == true){
+    cout << "---------------------------------------------------" << endl;
+    cout << "ADD, PRINT, DELETE, or QUIT" << endl;
+    cin.get(input, 20, '\n');
+    cin.ignore();
+
+    if(strcmp(input, "ADD")==0){
+      cout << "manually or generate?" << endl;
+      cin.get(input, 20, '\n');
+      cin.ignore();
+      if(strcmp(input, "generate")==0){
+	cout << "How many students to generate?" << endl;
+	int numtoo = 0;
+	cin >> numtoo;
+	cin.ignore();
+	for(int i = 0;i<numtoo;i++){
+	  table = add(generate(whatidwereone), table, size);
+	}
+ 
+
+      } else if(strcmp(input, "manually")==0){
+	Student* student = new Student();	
+	cout << "first name: ";
+	cin >> student->fname;
+	
+	cout << "last name: ";
+	cin >> student->lname;
+	
+	cout << "id #: ";
+	cin >> student->id;
+	
+	cout << "gpa: ";
+	cin >> student->gpa;
+	cin.ignore();
+	student->printStudent();
+	table = add(student, table, size);
+
+      }
+
+      int collisions = 0;
+      for(int i = 0;i<size && collisions < 3;i++){
+	collisions = 0;
+	Student* current = table[i];
+	if(current != NULL){
+	  while(current != NULL){
+	    collisions++;
+
+	    current = current->next;
+	  }
+	}
+
+	if(collisions > 3){
+	  
+
+	  rehash(table, size);
+	}
+      }
+    } else if (strcmp(input, "PRINT")==0){
+      printTable(table, size);
+    }
+    
+    
+  }
+  /*
   cout << "num of students to put?" << endl;
   int num = 0;
   cin >> num;
@@ -102,6 +166,8 @@ void printTable(Student** table, int size){
 
       while(current->next != NULL) {
 	current = current->next;
+	cout << " |" << endl;
+	cout << " V" << endl;
 	current->printStudent();
       }
     }
@@ -112,10 +178,12 @@ void printTable(Student** table, int size){
 Student** add(Student* student, Student** table, int size){
   //cout << "started add function" << endl;
 
-  Student* current = table[(student->id)%size];
+  int tempy = student->id%size;
+  Student* current = table[tempy];
+  
   if(current==NULL){
-    table[(student->id)%size] = student;
-  } else if (table[(student->id)%size] != NULL){
+    table[tempy] = student;
+  } else if (table[tempy] != NULL){
     while(current->next != NULL){
       current = current->next;
     }
@@ -266,13 +334,20 @@ void rehash(Student** &table, int &size){
   for(int i = 0;i<size*2;i++){
     newTable[i] = NULL;
   }
-
+  
   for(int i=0; i < size; i++){
+    cout << "rehashing..." << endl;
     Student* temp = table[i];
-    while(temp != NULL){
+    bool keepGoing2 = true;
+    while(temp != NULL && keepGoing2 == true){
+      
       newTable = add(temp, newTable, size*2);
       temp = temp->next;
       count++;
+      if(count > 3){
+        keepGoing2 = false;
+      }
+
     }
   }
   for(int i = 0;i<size;i++){
