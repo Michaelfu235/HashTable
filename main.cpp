@@ -1,3 +1,10 @@
+/*Author: Michael Fu
+  Date: 2/9/24
+  Description: this program creates a hash table that stores students and alters when more than 3 collisions occur to spread out the data. 
+  
+
+ */
+
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -6,6 +13,7 @@
 
 using namespace std;
 
+//create the student struct will all of the data and a pointer to the next student
 struct Student {
   //variables
   char* fname = new char[30];
@@ -30,10 +38,8 @@ public:
     delete[] fname;
     delete[] lname;
   }
-  void printStudent(){/*
-    cout.setf(ios::fixed, ios::floatfield);
-    cout.setf(ios::showpoint);
-    cout.precision(2);*/
+  void printStudent(){
+    //function to print the student
     cout << "name: " << endl;;
     cout << fname << endl;
     cout << lname << endl;
@@ -45,7 +51,7 @@ public:
   }
 };
 
-
+//prototypes
 void printTable(Student** table, int size);
 Student** add(Student* studenttoadd, Student** table, int size);
 Student* generate(int &idd);
@@ -53,26 +59,32 @@ void deleet(Student** &table, int size);
 Student** rehash(Student** table, int size);
 
 int main(){
+  //set the initial size and table
   int size = 100;
   Student** table = new Student*[size];
 
+  //random time and variables to use
   srand(time(NULL));
   bool justKeepGoing = true;
   char input[20];
 
+  //what id we're on so it goes in order
   int whatidwereone = 0;
 
   while(justKeepGoing == true){
+    //ask the user what they want to do
     cout << "---------------------------------------------------" << endl;
     cout << "ADD, PRINT, DELETE, or QUIT" << endl;
     cin.get(input, 20, '\n');
     cin.ignore();
 
+    //if the user put in "add"
     if(strcmp(input, "ADD")==0){
+      //ask wether they want to generate or manually add
       cout << "manually or generate?" << endl;
       cin.get(input, 20, '\n');
       cin.ignore();
-      if(strcmp(input, "generate")==0){
+      if(strcmp(input, "generate")==0){//if they chose to generate, just loop through using i up until the number they put in, making a new student each iteration
 	cout << "How many students to generate?" << endl;
 	int numtoo = 0;
 	cin >> numtoo;
@@ -82,7 +94,7 @@ int main(){
 	}
  
 
-      } else if(strcmp(input, "manually")==0){
+      } else if(strcmp(input, "manually")==0){//if the user put in manually, just go through and ask them for the info and add it to the table
 	Student* student = new Student();	
 	cout << "first name: ";
 	cin >> student->fname;
@@ -101,6 +113,7 @@ int main(){
 
       }
 
+      //after adding the student, go through and check for collisions, and if there is a node that has more than 3 chains, then call the rehash function
       int collisions = 0;
       for(int i = 0;i<size && collisions < 3;i++){
 	collisions = 0;
@@ -120,48 +133,23 @@ int main(){
 	  size *= 2;
 	}
       }
-    } else if (strcmp(input, "PRINT")==0){
+    } else if (strcmp(input, "PRINT")==0){//if the user put in print, call the printtable function
       printTable(table, size);
-    } else if (strcmp(input, "DELETE")==0){
+    } else if (strcmp(input, "DELETE")==0){//if they put in delete, call the delete function
       deleet(table, size);
-    } else if (strcmp(input, "QUIT")==0){
+    } else if (strcmp(input, "QUIT")==0){//if they put in quit, then set the boolean o keep going to false
       justKeepGoing = false;
     }
     
     
   }
-  /*
-  cout << "num of students to put?" << endl;
-  int num = 0;
-  cin >> num;
-  cin.ignore();
-  for(int i = 0;i<num;i++){
-    table = add(generate(whatidwereone), table, size);
-  }
-  printTable(table, size);
-
-  cout << "break" << endl;
-
   
-  rehash(table, size);
-
-  int randooo = 201;
-  cout << "before" << endl;
-  printTable(table, size);
-  cout << "after" << endl;
-  table = add(generate(randooo), table, size);
-  printTable(table, size);
-    
-  /*while(true){
-    deleet(table, size);
-    printTable(table, size);
-    }*/
 }
 
 
 
 
-
+//for the print table function, go through each element of the has table, and if it has nodes after it, go through and print out each node after it
 void printTable(Student** table, int size){
   for (int i = 0; i < size; i++) {
     if (table[i] != NULL) {
@@ -179,7 +167,7 @@ void printTable(Student** table, int size){
  }
 }
 
-
+//for the add function, create a temporary new student (so that the next variable isn't carried over. Then go to the right element in the table and if it's null, then set it to the new student. If there are already elements there, then add the new temporary student to the end of the chain. (the collision detection is in the main code)
 Student** add(Student* student, Student** table, int size){
   //cout << "started add function" << endl;
 
@@ -209,6 +197,7 @@ Student** add(Student* student, Student** table, int size){
 }
 
 
+//for generate, create a new student, and get a random first name, last name, and GPA. then increment the ID that was passed by reference
 Student* generate(int &idd){
   Student* student = new Student();
 
@@ -257,6 +246,7 @@ Student* generate(int &idd){
 
 
 
+//for the delete function, ask for the ID of the student to delete, and go through and delete the student whos ID matches the inputted ID, with a prev, head, and first temporary students to keep track of the "next"s
 void deleet(Student** &table, int size){
   int id = 0;
 
@@ -293,52 +283,9 @@ void deleet(Student** &table, int size){
   }
   cout << "Deleted!" << endl;
 }
-  /*
-  for(int i = 0;i<size;i++){
-    
-    if(table[i] != NULL){
-      Student* temp = table[i];
-      if(temp->id == idtodel){
-	if(temp->next==NULL){
-	  table[i] = NULL;
-	} else {
-	  table[i] = temp->next;
-	}
-      } else{
-	while(temp->next!=NULL){
-	  temp = temp->next;
-	  if(temp->id == idtodel){
-	    if(temp->next==NULL){
-	      table[i] = NULL;
-	    } else {
-	      table[i] = temp->next;
-	    }
-	  }
-	} 
-      
-      /*Student* temp = table[i];
-      if(temp->next == NULL){
-	if(temp->id == idtodel){
-	  table[i] == NULL;
-	}
-      } else if (table[i]->id == idtodel){
-	table[i] = table[i]->next;
-      } else {
-	Student* temp2;
-	while(temp->id != idtodel){
-	  temp2 = temp;
-	  temp = temp->next;
-	}
 
-	temp2->next = temp->next;
-}
-	
-      
-    }
-  }
-}
-*/
 
+//rehash function, create a new table of double the size and go through the old table, putting each element into the new table using the add function. 
 Student** rehash(Student** table, int size){
   int count = 0;
 
@@ -371,26 +318,6 @@ Student** rehash(Student** table, int size){
   size*=2;
   return newTable;
   
-  /*
-  Student** newTable = new Student*[size*2];
-  for(int i = 0;i<size*2;i++){
-    newTable[i] = NULL;
-  }
-
-  for(int i = 0;i<size;i++){
-    Student* temp = table[i];
-    while(temp != NULL){
-      temp->hash = student->id % SIZE*2;
-      Student* newS = new Student();
-      newS->fname = temp->fname;
-      newS->lname = temp->lname;
-      newS->id = temp->id;
-      newS->gpa = temp->gpa;
-
-      newTable = add(newS, newTable, size*2);
-      newS = newS->next
-    }
-    }*/
 
   
 }
