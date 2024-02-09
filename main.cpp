@@ -49,7 +49,7 @@ public:
 void printTable(Student** table, int size);
 Student** add(Student* studenttoadd, Student** table, int size);
 Student* generate(int &idd);
-
+void deleet(Student** &table, int size);
 
 int main(){
   int size = 100;
@@ -60,29 +60,6 @@ int main(){
   char input[20];
 
   int whatidwereone = 0;
-  /*
-  Student* newStu1 = new Student();
-  char* hmm = new char[20];
-  strcpy(hmm, "bob");
-  //strcpy(newStu1->fname, "bob");
-  newStu1->fname = hmm;
-  strcpy(hmm, "aoa");
-  newStu1->lname = hmm;
-  
-  //strcpy(newStu1->lname, "aoa");
-  newStu1->id = 453117;
-  newStu1->gpa = 4.32;
-
-  newStu1->printStudent();
-
-  table = add(newStu1, table, size);
-
-  printTable(table, size);
-  */
-
-  //int temp = 1;
-  //generate(temp)->printStudent();
-  //  table = add(generate(whatidwereone), table, size);
 
   cout << "num of students to put?" << endl;
   int num = 0;
@@ -93,60 +70,23 @@ int main(){
   }
   printTable(table, size);
 
-  /*
-  cout << " empty" << endl;
-  cout << table[1]->fname << endl;
-  cout << table[1]->lname << endl;
-  cout << table[1]->id << endl;
-  cout << table[1]->gpa << endl;
-  /*  Student* student = new Student();
-
-  int randnum = rand()%1001;
-  ifstream inputFile("fname.txt");
-  //inputFile.open("fname.txt");
-  char randomfirst[20];
-  int templine = 0;
-  while(randnum != templine  && inputFile.getline(randomfirst, 30)){
-    ++templine;
+  cout << "break" << endl;
+  while(true){
+    deleet(table, size);
+    printTable(table, size);
   }
-  if(templine == randnum){
-    strcpy(student->fname, randomfirst);
-  }
-  inputFile.close();
-  cout << student->fname << endl;
-  */
-  
-  
 }
 
 void printTable(Student** table, int size){
   for (int i = 0; i < size; i++) {
     if (table[i] != NULL) {
       table[i]->printStudent();
-      /*cout << "First name: " << table[i]->fname << endl;
-      cout << "Last name: " << table[i]->lname << endl;
-      cout << "ID: " << table[i]->id << endl;
-      cout.setf(ios::fixed, ios::floatfield);
-      cout.setf(ios::showpoint);
-      cout.precision(2);
-      cout << "GPA: " << table[i]->gpa << endl;
-      cout << endl;*/
 
       Student* current = table[i];
 
       while(current->next != NULL) {
 	current = current->next;
 	current->printStudent();
-	/*
-	cout << "First name: "	<< current->fname << endl;
-	cout << "Last name: " << current->lname << endl;
-	cout << "ID: "	<< current->id	<< endl;
-	cout.setf(ios::fixed, ios::floatfield);
-	cout.setf(ios::showpoint);
-	cout.precision(2);
-	cout << "GPA: " << current->gpa << endl;
-	cout << endl;
-	*/
       }
     }
  }
@@ -175,20 +115,6 @@ Student** add(Student* student, Student** table, int size){
 
 Student* generate(int &idd){
   Student* student = new Student();
-  /*
-  int randnum2 = rand()%1001;
-  ifstream inputFile("fname.txt");
-  char randomfirst[50];
-  int templine = 0;
-  while(randnum2 != templine  && inputFile.getline(randomfirst, 50)){
-    ++templine;
-  }
-  student->fname = randomfirst;
-    //strcpy(student->fname, randomfirst);
-    
-  
-  inputFile.close();
-  */
 
   int numLine = 0;
   int fRandom = rand()%100;
@@ -232,3 +158,87 @@ Student* generate(int &idd){
   
   return student;
 }
+
+
+
+void deleet(Student** &table, int size){
+  int id = 0;
+
+  cout << "What is the ID of the student you want to delete?" << endl;
+  cin >> id;
+  cin.ignore();
+
+  bool studenttodelfound = false;
+
+  for(int i=0; i<size; i++){
+    if(table[i]){
+      Student* prev = NULL;
+      Student* head = table[i];
+      Student* first = table[i];
+      //If the student is at the beginning of the list
+      if(first->id == id){
+	Student* temp = first;
+	first = first->next;
+	temp->~Student();
+	table[i] = first;
+      }
+      else{
+	while(head->next != NULL && head->id != id){
+	  prev = head;
+	  head = head->next;
+	}
+	//If the student is anywhere else
+	if(id == head->id){
+	  prev->next = head->next;
+	  head->~Student();
+	}
+      }
+    }
+  }
+  cout << "Deleted!" << endl;
+}
+  /*
+  for(int i = 0;i<size;i++){
+    
+    if(table[i] != NULL){
+      Student* temp = table[i];
+      if(temp->id == idtodel){
+	if(temp->next==NULL){
+	  table[i] = NULL;
+	} else {
+	  table[i] = temp->next;
+	}
+      } else{
+	while(temp->next!=NULL){
+	  temp = temp->next;
+	  if(temp->id == idtodel){
+	    if(temp->next==NULL){
+	      table[i] = NULL;
+	    } else {
+	      table[i] = temp->next;
+	    }
+	  }
+	} 
+      
+      /*Student* temp = table[i];
+      if(temp->next == NULL){
+	if(temp->id == idtodel){
+	  table[i] == NULL;
+	}
+      } else if (table[i]->id == idtodel){
+	table[i] = table[i]->next;
+      } else {
+	Student* temp2;
+	while(temp->id != idtodel){
+	  temp2 = temp;
+	  temp = temp->next;
+	}
+
+	temp2->next = temp->next;
+}
+	
+      
+    }
+  }
+}
+*/
